@@ -1,24 +1,24 @@
-const userModel = require('../model/userModel')
+const UserModel = require('../model/UserModel')
 const jwt = require('jsonwebtoken')
 
 
 
 // VALIDATION
-const isValid = function (value) {
+const isValid = function(value) {
     if (typeof value === 'undefined' || value === null) return false
     if (typeof value === 'string' && value.trim().length === 0) return false
     return true;
 }
-const isValidRequestBody = function (requestBody) {
+const isValidRequestBody = function(requestBody) {
     return Object.keys(requestBody).length > 0
 }
-const isValidTitle = function (title) {
+const isValidTitle = function(title) {
     return ['Mr', 'Mrs', 'Miss'].indexOf(title) !== -1
 }
 
 
 // USER CREATATION 
-const createUser = async function (req, res) {
+const createUser = async function(req, res) {
     let requestBody = req.body;
     try {
 
@@ -50,7 +50,7 @@ const createUser = async function (req, res) {
         if (!(/^[6-9]\d{9}$/gi.test(phone))) {
             res.status(400).send({ status: false, message: `phone number should be valid number` })
         }
-        const isPhoneAlreadyUsed = await userModel.findOne({ phone });
+        const isPhoneAlreadyUsed = await UserModel.findOne({ phone });
 
         if (isPhoneAlreadyUsed) {
             res.status(400).send({ status: false, message: `${phone}  is already registered` })
@@ -73,14 +73,14 @@ const createUser = async function (req, res) {
             res.status(400).send({ status: false, message: `password length should be betwwen 8-15` })
         }
 
-        const isEmailAlreadyUsed = await userModel.findOne({ email });
+        const isEmailAlreadyUsed = await UserModel.findOne({ email });
 
         if (isEmailAlreadyUsed) {
             res.status(400).send({ status: false, message: `${email} email address is already registered` })
             return
         }
 
-        let user = await userModel.create(req.body)
+        let user = await UserModel.create(req.body)
         res.status(201).send({ status: true, data: user })
     } catch (error) {
         res.status(500).send({ status: false, msg: error.message })
@@ -94,7 +94,7 @@ const createUser = async function (req, res) {
 
 
 // LOGIN USER 
-const loginUser = async function (req, res) {
+const loginUser = async function(req, res) {
     try {
         const requestBody = req.body;
         if (!isValidRequestBody(requestBody)) {
@@ -114,7 +114,7 @@ const loginUser = async function (req, res) {
             res.status(400).send({ status: false, message: `Password is required` })
             return
         }
-        const user = await userModel.findOne({ email, password });
+        const user = await UserModel.findOne({ email, password });
         if (!user) {
             res.status(401).send({ status: false, message: `Invalid login credentials` });
             return
@@ -122,7 +122,7 @@ const loginUser = async function (req, res) {
         let payload = { _id: user._id }
         let token = await jwt.sign(payload,
             //exp: Math.floor(Date.now() / 1000) + 10*60*60
-            '16th-Dec-Project-Books', { expiresIn: '30mins' })
+            'Project-Books', { expiresIn: '300000000000mins' })
         res.header('x-api-key', token);
         res.status(200).send({ status: true, message: `User logged in successfully`, data: { token } });
     } catch (error) {
@@ -133,11 +133,3 @@ module.exports.loginUser = loginUser
 module.exports.createUser = createUser
 
 //(jk)//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MWJiMGU2MGYxOWQ1YWVhZWUzYTY3NDIiLCJpYXQiOjE2Mzk2NTAzNjMsImV4cCI6MTYzOTY1MjE2M30.baaV0I5D_5ZhV9XzP_Sc2SnZ5ReYLs5Gt_ccovSNqbA
-
-
-
-
-
-
-
-

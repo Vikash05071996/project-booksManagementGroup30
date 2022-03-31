@@ -1,28 +1,28 @@
 const { request } = require("express")
 const bookModel = require("../model/bookModel")
-const userModel = require('../model/userModel')
+const userModel = require('../model/UserModel')
 const mongoose = require("mongoose")
 const ObjectId = mongoose.Types.ObjectId
 const reviewModel = require('../model/reviewModel')
 
 
 
-const isValid = function (value) {
+const isValid = function(value) {
     if (typeof value === 'undefined' || value === null) return false
     if (typeof value === 'string' && value.trim().length === 0) return false
     return true;
 }
-const isValidRequestBody = function (requestBody) {
+const isValidRequestBody = function(requestBody) {
     return Object.keys(requestBody).length > 0
 }
-const isValidObjectId = function (objectId) {
+const isValidObjectId = function(objectId) {
     return mongoose.Types.ObjectId.isValid(objectId)
 }
 
 
 
 //======================================================================================================
-const createBook = async function (req, res) {
+const createBook = async function(req, res) {
     try {
         const requestBody = req.body;
         if (!isValidRequestBody(requestBody)) {
@@ -83,20 +83,8 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, message: `User does not exists` })
 
         }
-        const bookData = {
-            title,
-            excerpt,
-            userId,
-            ISBN,
-            bookCover,
-            category,
-            subcategory,
-            reviews,
-            releasedAt,
-            isDeleted: isDeleted ? isDeleted : false,
-            deletedAt: isDeleted ? new Date() : null
-        }
-        const newBook = await bookModel.create(bookData)
+
+        const newBook = await bookModel.create(requestBody)
         res.status(201).send({ status: true, message: 'New book created successfully', data: newBook })
 
     } catch (error) {
@@ -109,7 +97,7 @@ module.exports.createBook = createBook
 //=======================================================================================================
 
 
-const getBook = async (req, res) => {
+const getBook = async(req, res) => {
     try {
         let filter = {
             isDeleted: false
@@ -155,7 +143,7 @@ module.exports.getBook = getBook
 
 //========================================================================================================
 
-const getBookWithreview = async (req, res) => {
+const getBookWithreview = async(req, res) => {
 
     try {
 
@@ -174,15 +162,19 @@ const getBookWithreview = async (req, res) => {
 
                 tempbook.reviews = reviewCount
                 res.status(200).send({
-                    status: true, data: {
-                        ...tempbook.toObject(), reviewData: reviews
+                    status: true,
+                    data: {
+                        ...tempbook.toObject(),
+                        reviewData: reviews
                     }
                 })
 
             } else {
                 res.status(200).send({
-                    status: true, data: {
-                        ...tempbook.toObject(), reviewData: reviews
+                    status: true,
+                    data: {
+                        ...tempbook.toObject(),
+                        reviewData: reviews
                     }
                 })
             }
@@ -201,7 +193,7 @@ module.exports.getBookWithreview = getBookWithreview
 
 //==========================================================================================================
 
-const updateBook = async (req, res) => {
+const updateBook = async(req, res) => {
     try {
         let filter = {
             _id: req.params.bookId,
@@ -277,7 +269,7 @@ module.exports.updateBook = updateBook
 //===================================================================================================
 
 
-const deleteById = async (req, res) => {
+const deleteById = async(req, res) => {
 
     try {
 
@@ -348,46 +340,3 @@ module.exports.deleteById = deleteById
 
 
 //======================================================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
